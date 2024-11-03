@@ -18,10 +18,8 @@ const authMiddleware = async (ctx: Context & { state: AuthState }, next: Next) =
   }
 
   try {
-    // Декодируем токен и проверяем его подпись
     const payload = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET!) as { id: string }
 
-    // Ищем пользователя в базе данных
     const user = await prisma.user.findUnique({
       where: { id: payload.id },
     })
@@ -32,10 +30,8 @@ const authMiddleware = async (ctx: Context & { state: AuthState }, next: Next) =
       return
     }
 
-    // Добавляем пользователя в состояние Koa для использования в последующих маршрутах
     ctx.state.user = user
 
-    // Переходим к следующему middleware или маршруту
     await next()
   } catch (error) {
     ctx.status = 401

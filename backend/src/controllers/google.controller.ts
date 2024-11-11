@@ -1,7 +1,6 @@
 import { Context } from 'koa'
 import { PrismaClient } from '@prisma/client'
 import { OAuth2Client } from 'google-auth-library'
-import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 import { generateAccessToken, generateRefreshToken } from '../utils/auth.utils'
 

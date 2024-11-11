@@ -15,17 +15,21 @@ model User {
   name      String?
   password  String?
   role      Role     @default(user)
-  posts Post[]
-
+  category Category[]
 }
-model Post {
-  id        String   @id @default(uuid())
-  title     String
-  content   String
+
+model Category {
+  id         String       @id @default(uuid())
+  name       String
+  parentId   String?    
+  parent     Category? @relation("CategoryToParent", fields: [parentId], references: [id], onDelete: Cascade)
+  children   Category[] @relation("CategoryToParent")
+
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
-  createdAt DateTime @default(now())
 }
+
+
 
 
 enum Role {

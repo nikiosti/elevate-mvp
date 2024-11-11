@@ -13,7 +13,6 @@ export const login = async (ctx: Context) => {
   const user = await prisma.user.findUnique({ where: { email } })
 
   if (user) {
-    // Выполнение входа, если пользователь существует
     if (!user.password || !(await bcrypt.compare(password, user.password))) {
       ctx.status = 401
       ctx.body = { message: 'Неправильный email или пароль' }

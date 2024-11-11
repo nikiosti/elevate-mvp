@@ -1,5 +1,5 @@
 import api from '@/api/axios'
-import { LoginForm } from '@/app/(main)/(auth)/login/types'
+import { LoginForm } from '@/app/(main)/(other)/(auth)/login/types'
 import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 

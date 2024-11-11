@@ -1,0 +1,12 @@
+.node {
+  @mixin hover {
+    background-color: #f5f5f4;
+
+    .action {
+      display: block;
+    }
+  }
+}
+.action {
+  display: none;
+}

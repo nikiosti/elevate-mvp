@@ -1,42 +1,25 @@
 import { Context, Next } from 'koa'
 import jwt from 'jsonwebtoken'
-import { PrismaClient, User } from '@prisma/client'
+import { AccessToken } from '../utils/auth.utils'
 
-const prisma = new PrismaClient()
-
-interface AuthState {
-  user?: User
-}
-
-const authMiddleware = async (ctx: Context & { state: AuthState }, next: Next) => {
+const authMiddleware = async (ctx: Context, next: Next) => {
   const accessToken = ctx.cookies.get('access_token')
 
   if (!accessToken) {
     ctx.status = 401
-    ctx.body = { error: 'Access token not provided' }
+    ctx.body = { error: 'middleware' }
     return
   }
 
   try {
-    const payload = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET!) as { id: string }
-
-    const user = await prisma.user.findUnique({
-      where: { id: payload.id },
-    })
-
-    if (!user) {
-      ctx.status = 401
-      ctx.body = { error: 'User not found' }
-      return
-    }
-
-    ctx.state.user = user
+    const payload = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET!) as AccessToken
+    ctx.state.access = payload
 
     await next()
   } catch (error) {
     ctx.status = 401
-    console.log(11, error)
-    ctx.body = { error: 'Invalid or expired access token1' }
+
+    ctx.body = { error: 'middleware' }
   }
 }
 

@@ -6,6 +6,7 @@ export const theme = createTheme({
   components: {
     Button: Button.extend({
       defaultProps: {
+        color: '#a8a29e',
         radius: 100,
       },
     }),

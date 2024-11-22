@@ -10,6 +10,8 @@ import {
   patchCategory,
   deleteCategory,
 } from './category.controller'
+
+import { getItems, postItem } from './item.controller'
 export {
   login,
   googleAuth,
@@ -22,4 +24,6 @@ export {
   createSubCategory,
   patchCategory,
   deleteCategory,
+  getItems,
+  postItem,
 }

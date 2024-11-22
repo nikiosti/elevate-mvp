@@ -4,22 +4,36 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { notifications } from '@mantine/notifications'
 import { AxiosError } from 'axios'
 
+interface Category {
+  id: number
+  name: string
+  parentId: number | null
+  children: Category[]
+}
+
 export const useCategories = () => {
   const queryClient = useQueryClient()
+
   const transformData = (data: any[]): TreeNodeData[] => {
-    return (
-      data?.map((item) => ({
-        value: item.id,
-        label: item.name,
-        children: transformData(item.children),
-      })) || []
-    )
+    return data?.map((item) => ({
+      value: item.id,
+      label: item.name,
+      children: transformData(item.children),
+    }))
   }
-  const { data: categories, ...queryInfo } = useQuery({
+  const { data: categories } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
       const { data } = await api.get('/api/categories')
-      console.log(data)
+
+      return transformData(data)
+    },
+  })
+
+  const { data: categoriesPublic } = useQuery<TreeNodeData[]>({
+    queryKey: ['categoriesPublic'],
+    queryFn: async () => {
+      const { data } = await api.get('/api/public/categories')
       return transformData(data)
     },
   })
@@ -44,7 +58,7 @@ export const useCategories = () => {
     },
     onError: (error: AxiosError) => {
       notifications.show({
-        title: error.response && error.response.data && error.response.data.error,
+        title: 'Ошибка',
         message: error.message,
       })
     },
@@ -72,10 +86,10 @@ export const useCategories = () => {
 
   return {
     categories,
+    categoriesPublic,
     addRootCategory: mutation.mutate,
     createSubCategory: createSubCategory.mutate,
     patchCategory: patchCategory,
     deleteCategory: deleteCategory,
-    ...queryInfo,
   }
 }

@@ -1,38 +1,93 @@
 'use client'
-import { ActionIcon, AppShell, Burger, Button, Group, HoverCard, Text, TextInput, Title } from '@mantine/core'
-import { UserRoundIcon } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { Search } from '@/components/search/search'
+import { useCategories } from '@/hook/use-categories'
+import {
+  MantineShadow,
+  AppShell,
+  Button,
+  Drawer,
+  Group,
+  HoverCard,
+  Text,
+  TextInput,
+  UnstyledButton,
+  SimpleGrid,
+  Paper,
+  Spoiler,
+  Container,
+  Indicator,
+} from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
+import { Heart, HeartIcon, MenuIcon, ShoppingCart, ShoppingCartIcon, X } from 'lucide-react'
 import { FC, PropsWithChildren } from 'react'
 
 const Wrapper: FC<PropsWithChildren> = ({ children }) => {
-  const router = useRouter()
+  const [opened, { toggle: toggleCatalog, close: closeCatalog }] = useDisclosure(false)
+  const { categoriesPublic } = useCategories()
   return (
-    <AppShell
-      header={{
-        height: 190,
-      }}
-    >
-      <AppShell.Header pt={100} px={32} bg="#e879f9" withBorder={false}>
-        <Group h="100%" justify="space-between">
-          <Link href="/">
-            <Title order={3} c="white">
-              Elevate MVP
-            </Title>
-          </Link>
+    <>
+      <AppShell
+        header={{
+          height: 120,
+        }}
+      >
+        <AppShell.Header withBorder={false}>
+          <Container size="xl">
+            <Group h="100%" gap={20} justify="space-between" py="xl" wrap="nowrap">
+              <UnstyledButton onClick={toggleCatalog}>
+                <Group wrap="nowrap">
+                  {opened ? <X /> : <MenuIcon />}
 
-          <Burger color="white" />
+                  <Text fz="lg">Каталог</Text>
+                </Group>
+              </UnstyledButton>
+              <Search />
+              <UnstyledButton>
+                <Group>
+                  <HeartIcon />
+                  <Text fz="lg">Желания</Text>
+                </Group>
+              </UnstyledButton>
+              <UnstyledButton>
+                <Group gap={15}>
+                  <Indicator label="3" size="xs">
+                    <ShoppingCartIcon />
+                  </Indicator>
+                  <div>
+                    <Text fz="lg">Корзина</Text>
+                    <Text fz="lg" c="dimmed">
+                      44 BYN
+                    </Text>
+                  </div>
+                </Group>
+              </UnstyledButton>
+            </Group>
+          </Container>
+        </AppShell.Header>
 
-          <TextInput placeholder="Найти" size="xl" style={{ flexGrow: 1 }} />
-
-          <ActionIcon variant="transparent" c="white" size="xl" onClick={() => router.push('/login')}>
-            <UserRoundIcon />
-          </ActionIcon>
-        </Group>
-      </AppShell.Header>
-
-      <AppShell.Main>{children}</AppShell.Main>
-    </AppShell>
+        <AppShell.Main pos="relative">
+          <Drawer
+            zIndex={1}
+            opened={opened}
+            onClose={toggleCatalog}
+            position="top"
+            overlayProps={{ backgroundOpacity: 0.3 }}
+            styles={{ inner: { top: 120 } }}
+          >
+            <Container size="xl">
+              <SimpleGrid cols={{ base: 1, xs: 2, sm: 3, lg: 6 }} spacing="md">
+                {categoriesPublic?.map((category) => (
+                  <Paper radius={12} p="xs" h={100} withBorder key={category.value}>
+                    <Text>{category.label}</Text>
+                  </Paper>
+                ))}
+              </SimpleGrid>
+            </Container>
+          </Drawer>
+          {children}
+        </AppShell.Main>
+      </AppShell>
+    </>
   )
 }
 

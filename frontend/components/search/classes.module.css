@@ -1,0 +1,12 @@
+.input {
+  width: 100%;
+  background-color: #f5f5f7;
+  height: rem(49px);
+
+  border-radius: rem(12px);
+  border: none;
+}
+
+.wrapperBox {
+  flex-grow: 1;
+}

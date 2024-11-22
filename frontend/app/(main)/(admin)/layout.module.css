@@ -1,7 +1,7 @@
 .node {
   @mixin hover {
-    background-color: #f5f5f4;
-
+    background-color: rgba(55, 53, 47, 0.09);
+    border-radius: 4px;
     .action {
       display: block;
     }

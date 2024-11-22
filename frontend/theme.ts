@@ -1,18 +1,37 @@
 'use client'
-import { Button, createTheme, TextInput, Title } from '@mantine/core'
-import classes from './theme.module.css'
+import { ActionIcon, Button, createTheme, Drawer, Group, Text } from '@mantine/core'
 export const theme = createTheme({
-  colors: {},
+  primaryColor: 'dark',
+
   components: {
     Button: Button.extend({
       defaultProps: {
-        color: '#a8a29e',
         radius: 100,
       },
     }),
-    TextInput: TextInput.extend({
-      classNames: {
-        input: classes.input,
+    Drawer: Drawer.extend({
+      defaultProps: {
+        shadow: '0',
+        withCloseButton: false,
+      },
+    }),
+    Group: Group.extend({
+      defaultProps: {
+        gap: '0,8px',
+      },
+    }),
+    Text: Text.extend({
+      defaultProps: {
+        c: '#000000',
+        fz: 'lg',
+      },
+    }),
+
+    ActionIcon: ActionIcon.extend({
+      defaultProps: {
+        variant: 'subtle',
+        size: 'xs',
+        c: '#45433e',
       },
     }),
   },

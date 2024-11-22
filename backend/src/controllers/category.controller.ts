@@ -76,7 +76,7 @@ export const createSubCategory = async (ctx: Context) => {
     ctx.status = 201
     ctx.body = sub
   } catch (error) {
-    console.log(error)
+
     ctx.status = 500
   }
 }

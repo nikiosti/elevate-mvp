@@ -4,14 +4,28 @@ import Koa from 'koa'
 import cors from '@koa/cors'
 import bp from 'koa-bodyparser'
 import authMiddleware from '../middleware/auth.middleware'
-import { authRouter, userRouter, categoriesRouter } from '../routes'
+import { authRouter, userRouter, categoriesRouter, categoriesRouterPublic, itemsPublic } from '../routes'
+import koaBody from 'koa-body'
 
 dotenv.config()
 const app = new Koa()
+app.use(
+  koaBody({
+    multipart: true,
+    formidable: {
+      uploadDir: './uploads', // Директория для загрузки файлов
+      keepExtensions: true, // Сохранять расширения файлов
+    },
+  })
+)
+
 app.use(bp())
 app.use(cors({ origin: process.env.CORS_URL, credentials: true }))
 app.use(authRouter.routes()).use(authRouter.allowedMethods())
-
+//PUBLIC
+app.use(categoriesRouterPublic.routes())
+app.use(itemsPublic.routes())
+//AUTH
 app.use(authMiddleware)
 app.use(userRouter.routes()).use(authRouter.allowedMethods())
 app.use(categoriesRouter.routes())

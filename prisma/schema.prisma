@@ -27,7 +27,20 @@ model Category {
 
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
+
+  items Item[]
 }
+
+model Item {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+
+  image String?
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
 
 
 

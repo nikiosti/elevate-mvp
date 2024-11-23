@@ -13,7 +13,7 @@ export const getItems = async (ctx: Context) => {
         categoryId: ctx.params.id,
       },
     })
-    console.log(items)
+
     ctx.status = 200
     ctx.body = items
   } catch (error) {
@@ -22,11 +22,38 @@ export const getItems = async (ctx: Context) => {
   }
 }
 
+import path from 'path'
+
 export const postItem = async (ctx: Context) => {
   try {
-    const body = ctx.request
+    console.log('Body:', ctx.request.body)
+    console.log('Files:', ctx.request.files)
+
+    const files = ctx.request.files?.files
+    console.log(2, files)
+
+    const filePath = files.filepath.replace(/\\/g, '/') // Приводим путь к стандарту
+    console.log(3, filePath)
+
+    const fileName = path.basename(filePath) // Извлекаем имя файла
+    console.log(fileName)
+    const publicPath = `/uploads/${fileName}` // Относительный путь для API
+
+    // const { name, categoryId } = ctx.request.body;
+
+    // Сохраняем данные в базу
+    // const newItem = await prisma.item.create({
+    //   data: {
+    //     name,
+    //     imagePath: publicPath,
+    //     categoryId: parseInt(categoryId, 10),
+    //   },
+    // });
+
     ctx.status = 201
+    ctx.body = newItem
   } catch (error) {
+    console.error(error)
     ctx.status = 500
     ctx.body = { error: 'Error creating item' }
   }

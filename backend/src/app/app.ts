@@ -22,7 +22,6 @@ app.use(
 )
 console.log(111, path.join(__dirname, '/uploads'))
 
-app.use(bp())
 app.use(cors({ origin: process.env.CORS_URL, credentials: true }))
 app.use(authRouter.routes()).use(authRouter.allowedMethods())
 

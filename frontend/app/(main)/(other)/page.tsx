@@ -29,11 +29,14 @@ const Page = () => {
         {itemsPublic?.map((item) => (
           <Group p="xs" key={item.id}>
             <Avatar
+              src={'http://localhost:3001/uploads/' + item.image}
               name={String(item.name)}
               color="initials"
               allowedInitialsColors={['blue', 'red', 'cyan', 'indigo']}
             />
-            <Text>{item.name}</Text>
+            <Text>
+              {item.name} {'http://localhost:3001/uploads/' + item.image}
+            </Text>
           </Group>
         ))}
       </Group>
@@ -42,6 +45,7 @@ const Page = () => {
         onDrop={(files) => {
           const formData = new FormData()
           formData.append('name', '213321')
+          formData.append('categoryId', '3d0d986b-8700-4c97-93fb-16cdb1204c06')
           formData.append('files', files[0])
           api.post('/api/public/item', formData)
         }}

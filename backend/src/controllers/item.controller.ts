@@ -29,26 +29,18 @@ export const postItem = async (ctx: Context) => {
     console.log('Body:', ctx.request.body)
     console.log('Files:', ctx.request.files)
 
-    const files = ctx.request.files?.files
-    console.log(2, files)
+    const { name, categoryId } = ctx.request.body as { name: string; categoryId: string }
 
-    const filePath = files.filepath.replace(/\\/g, '/') // Приводим путь к стандарту
-    console.log(3, filePath)
-
-    const fileName = path.basename(filePath) // Извлекаем имя файла
-    console.log(fileName)
-    const publicPath = `/uploads/${fileName}` // Относительный путь для API
-
-    // const { name, categoryId } = ctx.request.body;
+    const { files } = ctx.request.files as unknown as { files: { newFilename?: string } }
 
     // Сохраняем данные в базу
-    // const newItem = await prisma.item.create({
-    //   data: {
-    //     name,
-    //     imagePath: publicPath,
-    //     categoryId: parseInt(categoryId, 10),
-    //   },
-    // });
+    const newItem = await prisma.item.create({
+      data: {
+        name,
+        image: files.newFilename,
+        categoryId,
+      },
+    })
 
     ctx.status = 201
     ctx.body = newItem

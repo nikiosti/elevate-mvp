@@ -2,6 +2,8 @@ import { Context, Next } from 'koa'
 import jwt from 'jsonwebtoken'
 import { AccessToken } from '../utils/auth.utils'
 
+
+
 const authMiddleware = async (ctx: Context, next: Next) => {
   const accessToken = ctx.cookies.get('access_token')
 

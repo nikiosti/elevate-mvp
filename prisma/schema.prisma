@@ -28,6 +28,7 @@ model Category {
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
 
+  position Int      @default(0) 
   items Item[]
 }
 

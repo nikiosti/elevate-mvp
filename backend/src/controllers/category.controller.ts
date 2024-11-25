@@ -8,12 +8,14 @@ const prisma = new PrismaClient()
 
 const MAX_LEVEL = 5
 
-export const getCategories = async (ctx: Context) => {
+export const getCategories = async (ctx: Context): Promise<void> => {
   try {
+    // Получаем категории с вложенными структурами
     const categories = await prisma.category.findMany({
-      where: {
-        parentId: null,
+      orderBy: {
+        position: 'asc',
       },
+      where: { parentId: null },
       include: {
         children: {
           include: {
@@ -31,9 +33,11 @@ export const getCategories = async (ctx: Context) => {
       },
     })
 
+    // Устанавливаем успешный ответ
     ctx.status = 200
     ctx.body = categories
   } catch (error) {
+    console.error('Error fetching categories:', error)
     ctx.status = 500
     ctx.body = { error: 'Internal Server Error' }
   }
@@ -42,11 +46,17 @@ export const getCategories = async (ctx: Context) => {
 export const createRootCategory = async (ctx: Context) => {
   try {
     const { name } = ctx.request.body as { name: string }
-
+    const maxPosition = await prisma.category.aggregate({
+      _max: {
+        position: true,
+      },
+    })
+    const newPosition = (maxPosition._max.position || 0) + 1
     const rootCategory = await prisma.category.create({
       data: {
         name,
         authorId: ctx.state.access.id,
+        position: newPosition,
       },
     })
     ctx.status = 201
@@ -76,18 +86,23 @@ export const createSubCategory = async (ctx: Context) => {
     ctx.status = 201
     ctx.body = sub
   } catch (error) {
-
     ctx.status = 500
   }
 }
 
 export const patchCategory = async (ctx: Context) => {
   try {
-    const { name, id } = ctx.request.body as { name: string; id: string; level: number }
+    let { name, id, parentId } = ctx.request.body as {
+      name: string
+      id: string
+      level: number
+      parentId?: string | null
+    }
 
     const patchCategory = await prisma.category.update({
       data: {
         name,
+        parentId,
       },
       where: {
         id,

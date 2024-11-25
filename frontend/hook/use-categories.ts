@@ -23,9 +23,10 @@ export const useCategories = () => {
   }
   const { data: categories } = useQuery({
     queryKey: ['categories'],
+    initialData: [],
+
     queryFn: async () => {
       const { data } = await api.get('/api/categories')
-
       return transformData(data)
     },
   })
@@ -65,7 +66,7 @@ export const useCategories = () => {
   })
 
   const patchCategory = useMutation({
-    mutationFn: async (body: { name: string; id: string }) => {
+    mutationFn: async (body: { name: string; id: string; level?: number; parentId?: string }) => {
       const { data } = await api.patch('/api/categories', body)
       return data
     },

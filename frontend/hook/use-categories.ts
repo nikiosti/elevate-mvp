@@ -4,30 +4,16 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { notifications } from '@mantine/notifications'
 import { AxiosError } from 'axios'
 
-interface Category {
-  id: number
-  name: string
-  parentId: number | null
-  children: Category[]
-}
-
 export const useCategories = () => {
   const queryClient = useQueryClient()
 
-  const transformData = (data: any[]): TreeNodeData[] => {
-    return data?.map((item) => ({
-      value: item.id,
-      label: item.name,
-      children: transformData(item.children),
-    }))
-  }
   const { data: categories } = useQuery({
     queryKey: ['categories'],
     initialData: [],
 
     queryFn: async () => {
       const { data } = await api.get('/api/categories')
-      return transformData(data)
+      return data
     },
   })
 
@@ -35,7 +21,7 @@ export const useCategories = () => {
     queryKey: ['categoriesPublic'],
     queryFn: async () => {
       const { data } = await api.get('/api/public/categories')
-      return transformData(data)
+      return data
     },
   })
 

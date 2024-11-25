@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import dotenv from 'dotenv'
 import { Context } from '../types/context.types'
+import { TreeNodeData } from '@mantine/core'
 
 dotenv.config()
 
@@ -33,9 +34,16 @@ export const getCategories = async (ctx: Context): Promise<void> => {
       },
     })
 
-    // Устанавливаем успешный ответ
+    const transformData = (data: any[]): TreeNodeData[] => {
+      return data?.map((item) => ({
+        value: item.id,
+        label: item.name,
+        children: transformData(item.children),
+      }))
+    }
+
     ctx.status = 200
-    ctx.body = categories
+    ctx.body = transformData(categories)
   } catch (error) {
     console.error('Error fetching categories:', error)
     ctx.status = 500

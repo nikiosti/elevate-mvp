@@ -5,13 +5,14 @@ import { user } from './user.controller'
 
 import {
   getCategories,
-  createRootCategory,
-  createSubCategory,
+  createCategory,
   patchCategory,
   deleteCategory,
 } from './category.controller'
 
-import { getItems, postItem } from './item.controller'
+import { getItems, getItem, postItem, patchItem, deleteItem, patchItemPosition } from './item.controller'
+
+import { getCategoryItems } from './nested.controller'
 export {
   login,
   googleAuth,
@@ -20,10 +21,14 @@ export {
   logout,
   user,
   getCategories,
-  createRootCategory,
-  createSubCategory,
+  createCategory,
   patchCategory,
   deleteCategory,
   getItems,
+  getItem,
   postItem,
+  getCategoryItems,
+  patchItem,
+  patchItemPosition,
+  deleteItem,
 }

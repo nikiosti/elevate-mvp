@@ -1,5 +1,5 @@
 'use client'
-import { ActionIcon, Button, createTheme, Drawer, Group, Text } from '@mantine/core'
+import { ActionIcon, Button, createTheme, Drawer, Group, Text, Title } from '@mantine/core'
 export const theme = createTheme({
   primaryColor: 'dark',
 
@@ -7,6 +7,7 @@ export const theme = createTheme({
     Button: Button.extend({
       defaultProps: {
         radius: 100,
+        c: '#595959',
       },
     }),
     Drawer: Drawer.extend({
@@ -22,8 +23,16 @@ export const theme = createTheme({
     }),
     Text: Text.extend({
       defaultProps: {
-        c: '#000000',
-        fz: 'lg',
+        c: '#595959',
+        fz: 14,
+        fw: 600,
+      },
+    }),
+    Title: Text.extend({
+      defaultProps: {
+        c: '#595959',
+        fz: 24,
+        fw: 600,
       },
     }),
 

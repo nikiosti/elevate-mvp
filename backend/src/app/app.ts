@@ -3,7 +3,15 @@ import Koa from 'koa'
 
 import cors from '@koa/cors'
 import authMiddleware from '../middleware/auth.middleware'
-import { authRouter, userRouter, categoriesRouter, categoriesRouterPublic, itemsPublic } from '../routes'
+import {
+  authRouter,
+  userRouter,
+  categoriesRouter,
+  categoriesRouterPublic,
+  itemsPublic,
+  categoryItems,
+  itemRouter,
+} from '../routes'
 import koaBody from 'koa-body'
 import serve from 'koa-static'
 
@@ -28,10 +36,10 @@ app.use(categoriesRouterPublic.routes())
 app.use(itemsPublic.routes())
 
 //AUTH
-
 app.use(authMiddleware)
 app.use(userRouter.routes()).use(authRouter.allowedMethods())
 app.use(categoriesRouter.routes())
-
+app.use(categoryItems.routes())
+app.use(itemRouter.routes())
 
 export default app

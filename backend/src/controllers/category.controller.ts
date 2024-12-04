@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client'
+import { Category, PrismaClient } from '@prisma/client'
 import dotenv from 'dotenv'
 import { Context } from '../types/context.types'
-import { TreeNodeData } from '@mantine/core'
 
+import { CategoryWithChildren, Categories } from '../../../types/category'
 dotenv.config()
 
 const prisma = new PrismaClient()
@@ -11,11 +11,7 @@ const MAX_LEVEL = 5
 
 export const getCategories = async (ctx: Context): Promise<void> => {
   try {
-    // Получаем категории с вложенными структурами
     const categories = await prisma.category.findMany({
-      orderBy: {
-        position: 'asc',
-      },
       where: { parentId: null },
       include: {
         children: {
@@ -34,8 +30,9 @@ export const getCategories = async (ctx: Context): Promise<void> => {
       },
     })
 
-    const transformData = (data: any[]): TreeNodeData[] => {
+    const transformData = (data: CategoryWithChildren[]): Categories[] => {
       return data?.map((item) => ({
+        nodeProps: { type: item.type, image: item.image },
         value: item.id,
         label: item.name,
         children: transformData(item.children),
@@ -51,49 +48,29 @@ export const getCategories = async (ctx: Context): Promise<void> => {
   }
 }
 
-export const createRootCategory = async (ctx: Context) => {
+export const createCategory = async (ctx: Context) => {
   try {
-    const { name } = ctx.request.body as { name: string }
-    const maxPosition = await prisma.category.aggregate({
-      _max: {
-        position: true,
-      },
-    })
-    const newPosition = (maxPosition._max.position || 0) + 1
-    const rootCategory = await prisma.category.create({
-      data: {
-        name,
-        authorId: ctx.state.access.id,
-        position: newPosition,
-      },
-    })
-    ctx.status = 201
-    ctx.body = rootCategory
-  } catch {
-    ctx.status = 500
-  }
-}
-
-export const createSubCategory = async (ctx: Context) => {
-  try {
-    const { name, id, level } = ctx.request.body as { name: string; id: string; level: number }
-
-    if (level >= MAX_LEVEL) {
+    const { name, id, level } = ctx.request.body as { name: string; id?: string; level?: number }
+    const files = ctx.request.files as { files: { newFilename: string } } | undefined
+    //TODO
+    if (level && level >= MAX_LEVEL) {
       ctx.status = 400
       ctx.body = { error: `Превышен максимальный уровень вложенности: ${MAX_LEVEL}` }
       return
     }
 
-    const sub = await prisma.category.create({
+    const category = await prisma.category.create({
       data: {
         name,
+        image: files?.files.newFilename ? 'http://localhost:3001/uploads/' + files?.files.newFilename : null,
         parentId: id,
         authorId: ctx.state.access.id,
       },
     })
     ctx.status = 201
-    ctx.body = sub
+    ctx.body = category
   } catch (error) {
+    console.log(111, error)
     ctx.status = 500
   }
 }

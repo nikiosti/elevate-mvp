@@ -3,48 +3,52 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") 
-  directUrl = env("POSTGRES_URL_NON_POOLING") 
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
-
 model User {
-  id   String @id @default(uuid())
-  email     String   @unique
-  name      String?
-  password  String?
-  role      Role     @default(user)
+  id       String     @id @default(uuid())
+  email    String     @unique
+  name     String?
+  password String?
+  role     Role       @default(user)
   category Category[]
 }
 
 model Category {
-  id         String       @id @default(uuid())
-  name       String
-  parentId   String?    
-  parent     Category? @relation("CategoryToParent", fields: [parentId], references: [id], onDelete: Cascade)
-  children   Category[] @relation("CategoryToParent")
+  id       String       @id @default(uuid())
+  name     String
+  image    String?
+  parentId String?
+  parent   Category?    @relation("CategoryToParent", fields: [parentId], references: [id], onDelete: Cascade)
+  children Category[]   @relation("CategoryToParent")
+  type     CategoryType @default(title)
 
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
 
-  position Int      @default(0) 
-  items Item[]
+  rank String?
+  items    Item[]
 }
 
 model Item {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
 
-  image String?
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  image      String?
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  rank String?
 }
 
-
-
-
+enum CategoryType {
+  link
+  title
+}
 
 enum Role {
   user

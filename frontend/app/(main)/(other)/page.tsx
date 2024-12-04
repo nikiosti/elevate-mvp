@@ -2,13 +2,10 @@
 
 import api from '@/api/axios'
 import { useCategories } from '@/hook/use-categories'
-import { useItems } from '@/hook/use-items'
 import { Avatar, Container, Group, Text } from '@mantine/core'
 import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone'
-
 const Page = () => {
   const { categoriesPublic } = useCategories()
-  const { itemsPublic } = useItems()
 
   return (
     <Container size="xl">
@@ -21,22 +18,6 @@ const Page = () => {
               allowedInitialsColors={['blue', 'red', 'cyan', 'indigo']}
             />
             <Text>{category.label}</Text>
-          </Group>
-        ))}
-      </Group>
-
-      <Group mt="xl">
-        {itemsPublic?.map((item) => (
-          <Group p="xs" key={item.id}>
-            <Avatar
-              src={'http://localhost:3001/uploads/' + item.image}
-              name={String(item.name)}
-              color="initials"
-              allowedInitialsColors={['blue', 'red', 'cyan', 'indigo']}
-            />
-            <Text>
-              {item.name} {'http://localhost:3001/uploads/' + item.image}
-            </Text>
           </Group>
         ))}
       </Group>

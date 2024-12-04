@@ -1,37 +1,26 @@
 import api from '@/api/axios'
-import { TreeNodeData } from '@mantine/core'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { notifications } from '@mantine/notifications'
-import { AxiosError } from 'axios'
+import { Category, Item } from '@prisma/client'
 
-export const useCategories = () => {
+export const useCategoryItems = (id: string) => {
   const queryClient = useQueryClient()
 
-  const { data: categories } = useQuery({
-    queryKey: ['categories'],
-    initialData: [],
+  const categoryItems = useQuery<Category & { items: Item[]; children: Category[] }>({
+    queryKey: ['categoryItems'],
+
     queryFn: async () => {
-      const { data } = await api.get('/api/categories')
+      const { data } = await api.get('/api/category-items/' + id)
       return data
     },
   })
 
-  const { data: categoriesPublic } = useQuery<TreeNodeData[]>({
-    queryKey: ['categoriesPublic'],
-    queryFn: async () => {
-      const { data } = await api.get('/api/public/categories')
-      return data
-    },
-  })
-
-  const createCategory = useMutation({
-    mutationFn: async (body: { name: string; id: string; level: number; parentId?: string | null }) => {
-      const { data } = await api.post('/api/categories', body)
+  const mutation = useMutation({
+    mutationFn: async (body: { name: string }) => {
+      const { data } = await api.post('/api/root/categories', body)
       return data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
-      queryClient.invalidateQueries({ queryKey: ['categoryItems'] })
     },
   })
 
@@ -42,7 +31,6 @@ export const useCategories = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
-      queryClient.invalidateQueries({ queryKey: ['categoryItems'] })
     },
   })
 
@@ -57,9 +45,9 @@ export const useCategories = () => {
   })
 
   return {
-    createCategory,
-    categories,
-    categoriesPublic,
+    categoryItems,
+
+    addRootCategory: mutation.mutate,
     patchCategory: patchCategory,
     deleteCategory: deleteCategory,
   }

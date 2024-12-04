@@ -1,0 +1,17 @@
+.node {
+  flex-wrap: nowrap;
+}
+.text[data-active='true'] {
+  color: #a6a6a6 !important;
+}
+
+.image {
+  width: rem(32px);
+  height: rem(32px);
+
+  min-width: rem(32px);
+  min-height: rem(32px);
+
+  object-fit: cover;
+  border-radius: rem(6px);
+}

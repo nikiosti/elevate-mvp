@@ -1,17 +1,51 @@
 import api from '@/api/axios'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Item } from '@prisma/client'
-export const useItems = () => {
+
+export const useItems = (id?: string) => {
   const queryClient = useQueryClient()
 
-  const { data: itemsPublic } = useQuery<Item[]>({
-    queryKey: ['items'],
+  const item = useQuery<Item>({
+    queryKey: ['item', id],
     queryFn: async () => {
-      const { data } = await api.get('/api/public/items/3d0d986b-8700-4c97-93fb-16cdb1204c06')
-
+      const { data } = await api.get(`/api/item/${id}`)
       return data
+    },
+    enabled: Boolean(id),
+  })
+
+  const postItem = useMutation({
+    mutationFn: async (body: Item) => {
+      const { data } = await api.post(`/api/item`, body)
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['item'] })
+      queryClient.invalidateQueries({ queryKey: ['categoryItems'] })
     },
   })
 
-  return { itemsPublic }
+  const patchItem = useMutation({
+    mutationFn: async (body: { name?: string; position?: string }) => {
+      const { data } = await api.patch(`/api/item/${body.id}`, body)
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['item'] })
+      queryClient.invalidateQueries({ queryKey: ['categoryItems'] })
+    },
+  })
+
+  const patchItemPosition = useMutation({
+    mutationFn: async (body: { fromId: string; toId: string; fromPositon: number; toPositon: number }) => {
+      const { data } = await api.patch(`/api/item-position`, body)
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['item'] })
+      queryClient.invalidateQueries({ queryKey: ['categoryItems'] })
+    },
+  })
+
+  return { item, patchItem, patchItemPosition, postItem }
 }
